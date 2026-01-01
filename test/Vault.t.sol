@@ -10,4 +10,17 @@ contract VaultTest is Test {
     function setUp() public {
         vault = new Vault();
     }
+
+    function testFuzz_Deposit(uint256 amount) public {
+        vm.assume(amount > 0 && amount <= address(this).balance);
+
+        uint256 preBalance = vault.totalAssets();
+
+        vault.deposit{value: amount}();
+
+        assertEq(vault.balances(address(this)), amount);
+        assertEq(vault.totalAssets(), preBalance + amount);
+    }
+
+    receive() external payable {}
 }
