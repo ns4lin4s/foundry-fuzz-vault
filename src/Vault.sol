@@ -5,33 +5,32 @@ contract Vault {
     mapping(address => uint256) public balances;
     uint256 public totalAssets;
 
-    // Eventos para trackeo
+    // Events
     event Deposit(address indexed user, uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
 
-    // Permite a los usuarios depositar Ether
+    // Allow to user deposit ethers
     function deposit() public payable {
-        require(msg.value > 0, "No se puede depositar 0");
+        require(msg.value > 0, "You can not deposit 0");
         balances[msg.sender] += msg.value;
         totalAssets += msg.value;
         emit Deposit(msg.sender, msg.value);
     }
 
-    // Permite retirar una cantidad específica
+    // Allow withdraw a specific balance
     function withdraw(uint256 _amount) public {
-        require(balances[msg.sender] >= _amount, "Saldo insuficiente");
+        require(balances[msg.sender] >= _amount, "insufficient balance");
         
-        // Efectuar el retiro
         balances[msg.sender] -= _amount;
         totalAssets -= _amount;
         
         (bool success, ) = msg.sender.call{value: _amount}("");
-        require(success, "Transferencia fallida");
+        require(success, "transfer failed");
         
         emit Withdraw(msg.sender, _amount);
     }
 
-    // Función de utilidad para ver el balance de la bóveda
+    // Check account balance.
     function getExternalBalance() public view returns (uint256) {
         return address(this).balance;
     }
